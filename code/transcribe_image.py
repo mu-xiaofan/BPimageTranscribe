@@ -13,6 +13,7 @@ import pandas as pd
 from helper_functions import imgs_to_array, get_lcd
 import glob
 import cv2
+import cProfile
 """
 Directory structure:
     Test_case/: 
@@ -24,6 +25,8 @@ Directory structure:
             3.2 labels_BP/: File(.csv) saving filename of images in frames_BP/ folder
             3.3 test_data_predictions.csv: Transcription results for every test image (Format: filename | predicted_SBP| predicted_DBP)
 """
+profiler = cProfile.Profile()
+profiler.enable()
 root = '../Test_case/'
 data = root + 'test_data/'
 
@@ -77,3 +80,6 @@ for i in range(X_test.shape[0]):
     elif fname.endswith('_DP.jpg'):
         df.loc[df['filename'].str.contains(fname.strip('_DP.jpg')), 'predicted_DBP'] = predicted_num        
 df.to_csv(results + 'test_data_predictions.csv')
+profiler.disable()
+profiler.dump_stats("out.prof")
+profiler.print_stats()
